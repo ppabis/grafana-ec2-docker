@@ -1,0 +1,28 @@
+---
+version: '3.3'
+networks:
+  habitica-stats:
+    driver: bridge
+
+services:
+  grafana:
+    image: grafana/grafana:latest
+    volumes:
+      - /opt/grafana:/var/lib/grafana
+      - /opt/grafana.ini:/etc/grafana/grafana.ini
+    user: "${RUN_AS_ID}:${RUN_AS_GROUP}"
+    networks:
+      - habitica-stats
+    restart: always
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - 8443:443
+    networks:
+      - habitica-stats
+    volumes:
+      - /opt/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - /opt/nginx/selfsigned.crt:/etc/nginx/ssl/selfsigned.crt
+      - /opt/nginx/selfsigned.key:/etc/nginx/ssl/selfsigned.key
+    restart: always
