@@ -2,13 +2,13 @@
   Configures IAM role for the instance to be accessible via SSM and allows it to read from the Timestream database.
 **/
 
-resource "aws_iam_instance_profile" "ec2_profile" {
-  name = "ec2_profile-${random_string.stack_id.result}"
-  role = aws_iam_role.ec2_role.name
+resource "aws_iam_instance_profile" "grafana_ec2_profile" {
+  name = "grafana_ec2-${random_string.stack_id.result}"
+  role = aws_iam_role.grafana_ec2_profile.name
 }
 
-resource "aws_iam_role" "ec2_role" {
-  name = "ec2_role-${random_string.stack_id.result}"
+resource "aws_iam_role" "grafana_ec2_profile" {
+  name = "grafana_ec2-${random_string.stack_id.result}-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
@@ -22,11 +22,11 @@ resource "aws_iam_role" "ec2_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "ssm" {
-  role       = aws_iam_role.ec2_role.name
+  role       = aws_iam_role.grafana_ec2_profile.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
 resource "aws_iam_role_policy_attachment" "timestream" {
-  role       = aws_iam_role.ec2_role.name
+  role       = aws_iam_role.grafana_ec2_profile.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonTimestreamReadOnlyAccess"
 }
